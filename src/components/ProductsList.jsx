@@ -28,16 +28,32 @@ const ProductsList = () => {
   }, [language, categoryId]); // Re-fetch si cambia idioma o categoría
 
   return (
-    <div className="h-screen p-4 bg-white border border-gray-200 shadow-sm sm:p-8 dark:bg-white dark:border-gray-700">
+    <div className="min-h-screen px-4 py-8 bg-gray-50 dark:bg-gray-950">
+      <h2 className="mb-6 text-2xl font-bold text-center text-gray-800 dark:text-gray-100">
+        {categoryId ? "Productos de la categoría" : "Todos los productos"}
+      </h2>
 
-      <div className="flow-root">
-        <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
+      {products.length === 0 ? (
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          No hay productos disponibles.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => {
             // Filtrar por categoría si hay categoryId
-            if (categoryId && !product.categories.some(cat => cat.id.toString() === categoryId)) return null;
+            if (
+              categoryId &&
+              !product.categories.some(
+                (cat) => cat.id.toString() === categoryId
+              )
+            )
+              return null;
 
-            const title = product.translations?.[language]?.name || "Sin nombre";
-            const description = product.translations?.[language]?.description || "Sin descripción";
+            const title =
+              product.translations?.[language]?.name || "Sin nombre";
+            const description =
+              product.translations?.[language]?.description ||
+              "Sin descripción";
             const image = product.image || "/public/descarga.jpeg";
 
             return (
@@ -48,31 +64,37 @@ const ProductsList = () => {
                   price: product.price,
                   image,
                   description,
-                  ingredients: product.ingredients || [], // 👈 pasar ingredientes
+                  ingredients: product.ingredients || [],
                 }}
                 key={product.id}
+                className="overflow-hidden transition transform bg-white rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 dark:bg-gray-900"
               >
-                <li className="py-3 sm:py-4 border-amber-50">
-                  <div className="flex items-center">
-                    <div className="shrink-0">
-                      <img className="w-8 h-8 rounded-full" src={image} alt={title} />
-                    </div>
-                    <div className="flex-1 min-w-0 ms-4">
-                      <p className="text-sm font-bold truncate text-black-900 dark:text-black">{title}</p>
-                      <p className="text-sm text-black truncate dark:text-black-400">{description}</p>
-                    </div>
-                    <div className="inline-flex items-center text-base font-semibold text-black-900 dark:text-black">
+                <img
+                  src={image}
+                  alt={title}
+                  className="object-cover w-full h-40"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-gray-800 truncate dark:text-gray-100">
+                    {title}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-600 line-clamp-2 dark:text-gray-300">
+                    {description}
+                  </p>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-lg font-bold text-brand-red">
                       {product.price}
-                    </div>
+                    </span>
+                    <span className="px-3 py-1 text-xs font-semibold text-white bg-red-900 rounded-full">
+                      Ver más
+                    </span>
                   </div>
-                </li>
-                <hr className="text-white" />
-                <hr />
+                </div>
               </Link>
             );
           })}
-        </ul>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
