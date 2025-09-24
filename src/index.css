@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Dawning+of+a+New+Day&family=Rock+Salt&display=swap');
+@import "tailwindcss";
+
+
+
+@theme {
+  --color-brand-red: #d12629;
+  --color-brand-black: #000;
+  --font-rockSalt: "Rock Salt", cursive;
+  --font-dawning: "Dawning of a New Day", cursive;
+}
