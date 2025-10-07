@@ -1,10 +1,11 @@
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useLanguage } from "../context/languageContext.js";
 
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
-  const language = localStorage.getItem("language") || "es";
+  const { language } = useLanguage();
 
   // Obtenemos la categoría de la URL
   const [searchParams] = useSearchParams();
@@ -58,12 +59,19 @@ const ProductsList = () => {
 
             return (
               <Link
-                to="/card"
+                to={`/card/${product.id}`}
                 state={{
+                  productId: product.id,
                   title,
                   price: product.price,
                   image,
                   description,
+                  productTranslations: product.translations,
+                  ingredientTranslations: product.ingredients?.map((ing) => ({
+                    id: ing.id,
+                    icon: ing.icon,
+                    translations: ing.translations,
+                  })) || [],
                   ingredients: product.ingredients || [],
                 }}
                 key={product.id}

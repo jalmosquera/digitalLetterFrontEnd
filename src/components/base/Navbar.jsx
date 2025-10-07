@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useLanguage } from "../../context/languageContext.js";
 
 const Navbar = ({ onClose }) => {
   const [categories, setCategories] = useState([]);
-  const language = localStorage.getItem("language") || "es";
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchCategories = async () => {

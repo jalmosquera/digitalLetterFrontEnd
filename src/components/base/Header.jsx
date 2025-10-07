@@ -1,25 +1,18 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link } from "react-router-dom"; 
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Navbar from "./Navbar";
+import { useLanguage } from "../../context/languageContext.js";
 
 const Header = () => {
   const [toggle, setToggle] = useState(false);
-  const navigate = useNavigate();
 
-  const [language, setLanguage] = useState(() => {
-    const savedLang = localStorage.getItem("language");
-    if (savedLang) return savedLang;
-    const browserLang = navigator.language.slice(0, 2);
-    const supportedLangs = ["es", "en", "fr", "de"];
-    return supportedLangs.includes(browserLang) ? browserLang : "es";
-  });
+  const { language, setLanguage } = useLanguage();
 
   const handleChange = (e) => {
     const selected = e.target.value;
     setLanguage(selected);
-    localStorage.setItem("language", selected);
   };
 
   const handleToggle = () => setToggle((prev) => !prev);

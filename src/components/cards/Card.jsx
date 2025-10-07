@@ -1,21 +1,55 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import { useLanguage } from "../../context/languageContext.js";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Card = () => {
   const location = useLocation();
+  const { language } = useLanguage();
+  const params = useParams();
+
   const {
-    title,
-    price,
-    image,
-    description,
-    ingredients = [],
+    productId,
+    title: initialTitle,
+    price: initialPrice,
+    image: initialImage,
+    description: initialDescription,
+    productTranslations,
+    ingredientTranslations = [],
+    ingredients: initialIngredients = [],
   } = location.state || {};
+
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const fetchById = async () => {
+      const id = productId || params.id;
+      if (!id) return;
+      try {
+        const response = await axios.get(`http://localhost:8000/api/products/${id}/`, {
+          headers: { "Accept-Language": language },
+        });
+        setProduct(response.data);
+      } catch (error) {
+        console.error("Error fetching product by id:", error);
+      }
+    };
+    fetchById();
+  }, [productId, params.id, language]);
+
+  const effectiveTranslations = product?.translations || productTranslations;
+  const effectiveIngredients = product?.ingredients || initialIngredients;
+  const title = effectiveTranslations?.[language]?.name || initialTitle || "Sin nombre";
+  const description = effectiveTranslations?.[language]?.description || initialDescription || "Sin descripción";
+  const image = product?.image || initialImage;
+  const price = product?.price ?? initialPrice;
   const rating = 5; // estrellas llenas
   const maxRating = 6;
 
   return (
-    <div className="flex flex-col items-center min-h-screen py-10 bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col px-4 items-center min-h-screen py-10 bg-gray-50 dark:bg-gray-950">
       {/* Card Container */}
-      <div className="w-full max-w-3xl overflow-hidden bg-white shadow-lg dark:bg-gray-800 rounded-2xl">
+      <div className="w-full max-w-3xl overflow-hidden bg-white shadow-lg dark:bg-gray-900 rounded-2xl">
         {/* Imagen */}
         <img
           className="object-cover w-full h-64"
@@ -58,17 +92,19 @@ const Card = () => {
           </p>
 
           {/* Ingredientes */}
-          {ingredients.length > 0 && (
+          {effectiveIngredients.length > 0 && (
             <div className="mb-6">
               <h2 className="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
                 Ingredientes:
               </h2>
               <ul className="space-y-2">
-                {ingredients.map((ing) => {
+                {effectiveIngredients.map((ing) => {
+                  const effectiveTranslations = ing.translations ||
+                    ingredientTranslations.find((i) => i.id === ing.id)?.translations ||
+                    {};
                   const name =
-                    ing.translations?.[localStorage.getItem("language")]
-                      ?.name ||
-                    Object.values(ing.translations || {})[0]?.name ||
+                    effectiveTranslations?.[language]?.name ||
+                    Object.values(effectiveTranslations || {})[0]?.name ||
                     "Sin nombre";
 
                   return (
