@@ -45,14 +45,25 @@ const Card = () => {
   const price = product?.price ?? initialPrice;
   const rating = 5; // estrellas llenas
   const maxRating = 6;
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setIsImageOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
+    <>
     <div className="flex flex-col px-4 items-center min-h-screen py-10 bg-gray-50 dark:bg-gray-950">
       {/* Card Container */}
       <div className="w-full max-w-3xl overflow-hidden bg-white shadow-lg dark:bg-gray-900 rounded-2xl">
         {/* Imagen */}
         <img
-          className="object-cover w-full h-64"
+          onClick={() => setIsImageOpen(true)}
+          className="object-cover w-full h-64 cursor-zoom-in"
           src={image ?? "/public/descarga.jpeg"}
           alt={title}
         />
@@ -126,6 +137,23 @@ const Card = () => {
         </div>
       </div>
     </div>
+
+    {isImageOpen && (
+      <div
+        className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2"
+        onClick={() => setIsImageOpen(false)}
+        role="dialog"
+        aria-modal="true"
+      >
+        <img
+          src={image ?? "/public/descarga.jpeg"}
+          alt={title}
+          className="max-w-full max-h-full m-2 rounded-md shadow-2xl cursor-zoom-out"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+    )}
+    </>
   );
 };
 
